@@ -1,0 +1,21 @@
+/*@media screen and (max-width: 449px){
+  #restaurants-list li {
+    max-width: 100%;
+  }
+}
+*/
+
+@media screen and (min-width: 450px){
+  #restaurants-list li {
+    padding: 0;
+  	width: 40%;
+  }
+}
+
+@media screen and (min-width: 800px){
+  #restaurants-list li {
+    padding: 0;
+  	width: 17%;
+  	margin: 5px;
+  }
+}
