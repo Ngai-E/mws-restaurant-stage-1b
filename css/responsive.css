@@ -1,24 +1,27 @@
-/*@media screen and (max-width: 449px){
-  #restaurants-list li {
-    max-width: 100%;
-  }
-}
-*/
 
-/*@media screen and (min-width: 450px){
-  #restaurants-list li {
-    padding: 0 5% 5%;
-  	width: 31%;
-  	font-size: 2em;
-  }
-}*/
 
-@media screen and (min-width: 950px){
+@media screen and (min-width: 700px){
    #restaurants-list li {
     padding: 0 5% 5%;
-    width: 35%;
+    width: 33%;
     font-size: 2em;
   }
+
+  .inside main {
+    width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+  }
+
+  body  main{
+    width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+  }
+
+
 }
 
 #table_container{
