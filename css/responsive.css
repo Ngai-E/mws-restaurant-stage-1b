@@ -31,7 +31,17 @@
 
 }
 
+label {
+  font-size: 16pt;
+  color: white;
+}
+
+
 #table_container{
   min-width: 100%;
   overflow-x: auto;
+}
+
+#map-container a{
+  color:#093e56;
 }
