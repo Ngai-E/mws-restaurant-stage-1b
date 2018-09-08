@@ -1,21 +1,28 @@
 
 
-@media screen and (min-width: 700px){
+@media screen and (min-width: 1200px){
    #restaurants-list li {
     padding: 0 5% 5%;
-    width: 33%;
+    max-width: 33%;
     font-size: 2em;
   }
 
+  #restaurant-img {
+  margin-left: auto;
+    margin-right: auto;
+    display: block;
+  max-width: 100%;
+}
+
   .inside main {
-    width: 700px;
+    width: 1200px;
     margin-left: auto;
     margin-right: auto;
     display: block;
   }
 
   body  main{
-    width: 700px;
+    width: 1200px;
     margin-left: auto;
     margin-right: auto;
     display: block;
@@ -25,6 +32,6 @@
 }
 
 #table_container{
-  width: 100%;
+  min-width: 100%;
   overflow-x: auto;
 }
