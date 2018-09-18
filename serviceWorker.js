@@ -1,4 +1,4 @@
- let cache_name = 'static-cache1';
+ let cache_name = 'static-cache3';
  let urlsToCache = [
  					'./',
  					'index.html',
@@ -26,16 +26,11 @@ self.addEventListener('activate', function(event) {
   event.waitUntil(
     caches.keys().then(function(allcaches) {
       return Promise.all(
-        allcaches.filter(function(cache) {
-          // Return true if you want to remove this cache,
-          // but remember that caches are shared across
-          // the whole origin
-
-          if(cache !== cache_name){
-          	console("not equal");
-          	return true;
-          }
-        }).map(function(cache) {
+        allcaches.filter(function(cacheName) {
+          	return cacheName != cache_name;
+          
+        }).map(function(cacheName) {
+        	//console.log(`trying to delete ${cacheName}`);
           return caches.delete(cacheName);
         })
       );
@@ -43,7 +38,7 @@ self.addEventListener('activate', function(event) {
   );
 });
 
- /*when a fetch event is triggered, check from cache first*/
+ /*when a fetch event is triggered, check from cache first */
  self.addEventListener('fetch', function(event) {
   event.respondWith(
     caches.open(cache_name).then(function(cache) {
