@@ -6,6 +6,7 @@
  					'css/responsive.css',
  					'js/dbhelper.js',
  					'js/main.js',
+          'js/idb.js',
  					'js/restaurant_info.js',
 					'https:unpkg.com/leaflet@1.3.1/dist/leaflet.js',
 					'https://unpkg.com/leaflet@1.3.1/dist/leaflet.css'
