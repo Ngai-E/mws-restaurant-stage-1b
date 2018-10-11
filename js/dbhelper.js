@@ -39,6 +39,7 @@ class DBHelper {
           })
           .then(restaurants => {
             callback(null, restaurants);
+            restaurantDB.storeJSON(restaurants);
           })
           .catch(e => {
             callback(`Request failed. Returned status of ${e}`, null);
