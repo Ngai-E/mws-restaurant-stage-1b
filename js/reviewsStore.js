@@ -8,13 +8,17 @@ class restaurantDB {
 		    return Promise.resolve();
 		  }
 
-		let dbPromise = idb.open('restaurant-db', 1, function(upgradeDb) {
+		let dbPromise = idb.open('restaurant-db', 2, function(upgradeDb) {
 		  	switch(upgradeDb.oldVersion){
 		  		case 0:
 			  		let store = upgradeDb.createObjectStore('restaurant', {
 			      	keyPath: 'id'
 				    });
 				    store.createIndex('id', 'id');
+				case 1: 
+					/*store = upgradeDb.transaction.objectStore('restaurant');
+					store.createIndex('neighborhood', 'neighborhood');
+					store.createIndex('cuisine_type', 'cuisine_type');*/
 		  	}
 		    
 			});
@@ -24,7 +28,7 @@ class restaurantDB {
 	   // storing restaurant data
 	  static storeJSON(data) {
 	  	// body...
-	  	console.log('in restaurant')
+	  	//console.log('in restaurant')
 	  	let dbPromise = restaurantDB.openDB();
 	  	dbPromise.then(function(db)
 	  		{

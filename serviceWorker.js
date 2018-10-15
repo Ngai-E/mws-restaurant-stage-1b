@@ -46,7 +46,10 @@ self.addEventListener('activate', function(event) {
     caches.open(cache_name).then(function(cache) {
       return cache.match(event.request).then(function(response) {
         var fetchPromise = fetch(event.request).then(function(networkResponse) {
-          cache.put(event.request, networkResponse.clone());
+
+          //cache non json responses
+          if(!(event.request.url.endsWith('restaurants')))
+            cache.put(event.request, networkResponse.clone());
           return networkResponse;
         })
         return response || fetchPromise;
@@ -55,24 +58,3 @@ self.addEventListener('activate', function(event) {
   );
 });
 
-/* function fetchAndCache(url){
-
- 		return fetch(url)
- 				.then(function(response){
- 					//check if response is valid
- 					if(response.status != 200)
- 						throw Error(response.statusText);
- 					return caches.open(cache_name)
- 							.then(function(cache){
- 								cache.put(url, response.clone()); //put the response in cache
- 								return response;
- 							});
- 				})
- 				.catch(function(error){
- 					console.log("request failed with error: ", error);
- 				})
-
- }*/
-/*self.addEventListener('fetch', function(event){
-	console.log(event.request.url);
-});*/

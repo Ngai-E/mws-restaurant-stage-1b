@@ -33,17 +33,42 @@ class DBHelper {
     };
     xhr.send();*/
 
-    return fetch(DBHelper.DATABASE_URL)
+    let dbPromise = restaurantDB.openDB(); //open the restaurant indexedDB
+
+    return dbPromise.then(function(db){
+
+      var index = db.transaction('restaurant')
+      .objectStore('restaurant').index('id');
+
+      return index.getAll().then(restaurants => {
+
+        //read the restaurant from the database if already stored
+        if(restaurants.length > 0){
+         //console.log('reading from database');
+          callback(null, restaurants);
+        }
+
+        else{
+            //fetch the json data and store if the page is loading for the first time
+           return fetch(DBHelper.DATABASE_URL)
           .then(response => {
             return response.json();
           })
           .then(restaurants => {
             callback(null, restaurants);
-            restaurantDB.storeJSON(restaurants);
+            restaurantDB.storeJSON(restaurants);  //store the restaurant details.
           })
           .catch(e => {
             callback(`Request failed. Returned status of ${e}`, null);
           })
+        }
+        
+      }).catch(e => {
+        callback(`Request failed. Returned status of ${e}`, null);
+      });
+    });
+
+   
 
   }
 
@@ -57,7 +82,7 @@ class DBHelper {
         callback(error, null);
       } else {
         const restaurant = restaurants.find(r => r.id == id);
-        if (restaurant) { // Got the restaurant
+        if (restaurant) { //Got the restaurant
           callback(null, restaurant);
         } else { // Restaurant does not exist in the database
           callback('Restaurant does not exist', null);
