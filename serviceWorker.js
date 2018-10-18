@@ -1,4 +1,3 @@
-//
  let cache_name = 'static-cache3';
  let urlsToCache = [
  					'./',
