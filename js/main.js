@@ -110,18 +110,7 @@ initMap = () => {
 
   updateRestaurants();
 }
-/* window.initMap = () => {
-  let loc = {
-    lat: 40.722216,
-    lng: -73.987501
-  };
-  self.map = new google.maps.Map(document.getElementById('map'), {
-    zoom: 12,
-    center: loc,
-    scrollwheel: false
-  });
-  updateRestaurants();
-} */
+
 
 /**
  * Update page and map for current restaurants.
@@ -163,6 +152,70 @@ resetRestaurants = (restaurants) => {
   self.restaurants = restaurants;
 }
 
+  /**
+ * Lazy loading images
+ */
+lazyLoadImage = () => {
+  let lazyImages = [].slice.call(document.querySelectorAll("img.restaurant-img"));
+  //console.log(document.querySelectorAll(".restaurant-img"));
+  let active = false;
+  //console.dir(lazyImages);
+  if ("IntersectionObserver" in window) {
+    //console.log('found');
+    //console.log(` images are ${lazyImages}`);
+    let lazyImageObserver = new IntersectionObserver(function(entries, observer) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          let lazyImage = entry.target;
+          lazyImage.src = lazyImage.dataset.src;
+         // lazyImage.srcset = lazyImage.dataset.srcset;
+          lazyImage.classList.remove("lazy");
+          lazyImageObserver.unobserve(lazyImage);
+        }
+      });
+    });
+
+    lazyImages.forEach(function(lazyImage) {
+      lazyImageObserver.observe(lazyImage);
+    });
+  } else {
+    // Possibly fall back to a more compatible method here
+    const lazyLoad = function() {
+    if (active === false) {
+      active = true;
+
+      setTimeout(function() {
+        lazyImages.forEach(function(lazyImage) {
+          if ((lazyImage.getBoundingClientRect().top <= window.innerHeight && lazyImage.getBoundingClientRect().bottom >= 0) && getComputedStyle(lazyImage).display !== "none") {
+            //console.log(lazyImage.data-src);
+            lazyImage.src = lazyImage.dataset.src;
+            //lazyImage.srcset = lazyImage.dataset.srcset;
+            lazyImage.classList.remove("lazy");
+
+            lazyImages = lazyImages.filter(function(image) {
+              return image !== lazyImage;
+            });
+
+            if (lazyImages.length === 0) {
+              document.removeEventListener("scroll", lazyLoad);
+              window.removeEventListener("resize", lazyLoad);
+              window.removeEventListener("orientationchange", lazyLoad);
+            }
+          }
+        });
+
+        active = false;
+      }, 200);
+    }
+  };
+
+  document.addEventListener("scroll", lazyLoad);
+  window.addEventListener("resize", lazyLoad);
+  window.addEventListener("orientationchange", lazyLoad);
+  
+}//end else
+
+}
 /**
  * Create all restaurants HTML and add them to the webpage.
  */
@@ -172,6 +225,8 @@ fillRestaurantsHTML = (restaurants = self.restaurants) => {
     ul.append(createRestaurantHTML(restaurant));
   });
   addMarkersToMap();
+  //console.log(document.querySelectorAll('img.restaurant-img'))
+  lazyLoadImage();
 }
 
 /**
@@ -182,7 +237,11 @@ createRestaurantHTML = (restaurant) => {
 
   const image = document.createElement('img');
   image.className = 'restaurant-img';
-  image.src = DBHelper.imageUrlForRestaurant(restaurant);
+  //image.src = "img/icons-192.png";
+  image.src = "";
+  image.setAttribute("data-src", DBHelper.imageUrlForRestaurant(restaurant));
+  //image.src = DBHelper.imageUrlForRestaurant(restaurant);
+  //console.log(image.getAttribute('className'));
   image.setAttribute("alt", "restaurant photo");
   li.append(image);
 
@@ -224,16 +283,4 @@ addMarkersToMap = (restaurants = self.restaurants) => {
 
 
 
-/* addMarkersToMap = (restaurants = self.restaurants) => {
-  restaurants.forEach(restaurant => {
-    // Add marker to the map
-    const marker = DBHelper.mapMarkerForRestaurant(restaurant, self.map);
-    google.maps.event.addListener(marker, 'click', () => {
-      window.location.href = marker.url
-    });
-    self.markers.push(marker);
-  });
-} */
 
-
-// adding roving index to select tags

@@ -16,9 +16,7 @@ class restaurantDB {
 				    });
 				    store.createIndex('id', 'id');
 				case 1: 
-					/*store = upgradeDb.transaction.objectStore('restaurant');
-					store.createIndex('neighborhood', 'neighborhood');
-					store.createIndex('cuisine_type', 'cuisine_type');*/
+				;
 		  	}
 		    
 			});
