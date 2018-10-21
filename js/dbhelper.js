@@ -1,3 +1,5 @@
+
+
 /**
  * Common database helper functions.
  */
@@ -18,7 +20,7 @@ class DBHelper {
    */
   static fetchRestaurants(callback) {
 
-    let dbPromise = restaurantDB.openDB(); //open the restaurant indexedDB
+    let dbPromise = DBHelper.openDB(); //open the restaurant indexedDB
 
     return dbPromise.then(function(db){
 
@@ -41,7 +43,7 @@ class DBHelper {
           })
           .then(restaurants => {
             callback(null, restaurants);
-            restaurantDB.storeJSON(restaurants);  //store the restaurant details.
+            DBHelper.storeJSON(restaurants);  //store the restaurant details.
           })
           .catch(e => {
             callback(`Request failed. Returned status of ${e}`, null);
@@ -196,6 +198,46 @@ class DBHelper {
       marker.addTo(newMap);
     return marker;
   } 
+
+
+  static openDB(){
+      //skip creating indexedDB if service worker is not supported
+    console.log('inside indexedDB code');
+      if (!navigator.serviceWorker) {
+        return Promise.resolve();
+      }
+
+    let dbPromise = idb.open('restaurant-db', 2, function(upgradeDb) {
+        switch(upgradeDb.oldVersion){
+          case 0:
+            let store = upgradeDb.createObjectStore('restaurant', {
+              keyPath: 'id'
+            });
+            store.createIndex('id', 'id');
+        case 1: 
+        ;
+        }
+        
+      });
+        return dbPromise;
+    }
+
+     // storing restaurant data
+    static storeJSON(data) {
+      // body...
+      //console.log('in restaurant')
+      let dbPromise = DBHelper.openDB();
+      dbPromise.then(function(db)
+        {
+          let tx = db.transaction('restaurant', 'readwrite');
+          let store = tx.objectStore('restaurant');
+          data.forEach(function(restaurant){
+            store.put(restaurant);
+          }); 
+        });
+      
+
+    }
 
 }
 
