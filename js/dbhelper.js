@@ -16,6 +16,26 @@ class DBHelper {
   }
 
   /**
+ *service worker registration
+ */
+ static serviceWorkerRegistration() {
+  //check if service worker is supported in browser
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('serviceWorker.js', {scope: "/"}) /*register the service worker*/
+    .then(function(registration) {
+    console.log(`successfull registration of service worker with scope ${registration.scope}`);
+    })
+    .catch(function(error) {
+    console.log('Registration failed: ', error);
+    });
+  }
+
+  //not supported
+  else 
+    console.log("service worker not supported");
+ }
+
+  /**
    * Fetch all restaurants.
    */
   static fetchRestaurants(callback) {
