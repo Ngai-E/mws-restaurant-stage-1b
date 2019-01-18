@@ -53,6 +53,18 @@
     <!-- end restaurant -->
     <!-- Beginning reviews -->
     <section id="reviews-container">
+      <!-- form to add review -->
+        <form method="POST">
+          <input type="hidden" name="Restaurant_id" value=""><br>
+          <label for="name">Enter Name</label>
+          <input type="text" name="name" required> <br>
+          <label for="ratings">Rate this restaurant</label>
+          <input type="number" name="ratings" min="1" max="5" required> <br>
+          <label for="comments">Enter a comment: </label>
+          <textarea  placeholder="enter comment here" name="comments" required></textarea> <br>
+          <button type="Submit" onclick = 'submitReview()'>Submit</button>
+        </form>
+     <!--  end form to add reviews -->
       <ul id="reviews-list"></ul>
     </section>
     <!-- End reviews -->

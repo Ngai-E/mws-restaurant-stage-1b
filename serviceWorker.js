@@ -1,4 +1,4 @@
- let cache_name = 'static-cache3';
+  let cache_name = 'static-cache3';
  let urlsToCache = [
  					'./',
  					'index.html',
@@ -40,7 +40,7 @@ self.addEventListener('activate', function(event) {
 });
 
  /*when a fetch event is triggered, check from cache first */
- self.addEventListener('fetch', function(event) {
+ self.addEventListener('fetch', function(event) {  
   event.respondWith(
     caches.open(cache_name).then(function(cache) {
       return cache.match(event.request).then(function(response) {

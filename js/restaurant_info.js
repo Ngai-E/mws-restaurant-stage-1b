@@ -10,6 +10,14 @@ document.addEventListener('DOMContentLoaded', (event) => {
 });
 
 /**
+ * add event for review submission
+ */
+document.addEventListener('DOMContentLoaded', (event) => {  
+  initMap();
+  DBHelper.serviceWorkerRegistration();
+});
+
+/**
  * Initialize leaflet map
  */
 initMap = () => {
