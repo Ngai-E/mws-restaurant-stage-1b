@@ -259,5 +259,23 @@ class DBHelper {
 
     }
 
+    //store reviews data
+    static postReview(data){
+
+      //check if user is online
+
+      fetch("http://localhost:1337/reviews/",
+             { 
+              method: 'post',
+              headers: { "Content-type": "application/JSON; charset=UTF-8" },
+              body: JSON.stringify(data)
+             }) 
+      .then(json => {return json.json()}) 
+      .then(function (data) {
+       console.log('Request succeeded with JSON response', data); 
+      })
+      .catch(function (error) { console.log('Request failed', error); });
+    }
+
 }
 

@@ -244,6 +244,20 @@ createRestaurantHTML = (restaurant) => {
   more.href = DBHelper.urlForRestaurant(restaurant);
   li.append(more)
 
+  //adding feature for marking as favorite
+  const favorite = document.createElement('div');
+  favorite.setAttribute('class', 'favorite');
+  const star = document.createElement('span');   
+  star.setAttribute('class', 'fa fa-star');
+  star.innerHTML = 'ADD AS FAVORITE'
+  favorite.append(star);
+
+  favorite.addEventListener('click', (event) =>{
+    processFavorite(restaurant.id);
+  })
+ // li.append('<br>')
+  li.append(favorite)
+
   return li
 }
 
@@ -264,5 +278,19 @@ addMarkersToMap = (restaurants = self.restaurants) => {
 } 
 
 
+//favorite or unfavorite a restaurant
+processFavorite(id){
+  
+  fetch(`http://localhost:1337/restaurants/${id}/?is_favorite=true`,
+             { 
+              method: 'PUT',
+             }) 
+      .then(json => {return json.json()}) 
+      .then(function (data) {
+       console.log('Request succeeded with JSON response', data); 
+       //do something when it is succeeded like toggling the like star
+      })
+      .catch(function (error) { console.log('Request failed', error); });
+}
 
 

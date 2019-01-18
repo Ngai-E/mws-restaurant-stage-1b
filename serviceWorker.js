@@ -12,10 +12,10 @@
 					'https://unpkg.com/leaflet@1.3.1/dist/leaflet.css'
  				];
 
- /*listening for an install event to cache the sites*/
+ /*listening for an install event to cache the sites*/ //
  self.addEventListener('install', function(event) {
  	event.waitUntil(
- 		caches.open(cache_name) /*opening static app cache*/
+ 		caches.open(cache_name) /*opening static app cache*/   
  		.then(function(cache) {
  			return cache.addAll(urlsToCache);  /* add static files to cache for faster load after first visit*/
  		})
@@ -31,7 +31,7 @@ self.addEventListener('activate', function(event) {
           	return cacheName != cache_name;
           
         }).map(function(cacheName) {
-        	//console.log(`trying to delete ${cacheName}`);
+        	//console.log(`trying to delete ${cacheName}`);    //
           return caches.delete(cacheName);
         })
       );
@@ -39,9 +39,16 @@ self.addEventListener('activate', function(event) {
   );
 });
 
- /*when a fetch event is triggered, check from cache first */
- self.addEventListener('fetch', function(event) {  
-  event.respondWith(
+ /*when a fetch event is triggered, check from cache first */ //
+ self.addEventListener('fetch', function(event) {
+  //console.log(event.request.method)  
+  if(event.request.method === 'POST')
+    {
+      //PUT DATA INTO IDEXEDdb
+    }
+
+  else if (event.request.method === 'GET'){
+    event.respondWith(
     caches.open(cache_name).then(function(cache) {
       return cache.match(event.request).then(function(response) {
         var fetchPromise = fetch(event.request).then(function(networkResponse) {
@@ -55,5 +62,7 @@ self.addEventListener('activate', function(event) {
       })
     })
   );
+  }
+  
 });
 

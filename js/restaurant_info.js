@@ -9,13 +9,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
   DBHelper.serviceWorkerRegistration();
 });
 
-/**
- * add event for review submission
- */
-document.addEventListener('DOMContentLoaded', (event) => {  
-  initMap();
-  DBHelper.serviceWorkerRegistration();
-});
+
 
 /**
  * Initialize leaflet map
@@ -92,8 +86,12 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   if (restaurant.operating_hours) {
     fillRestaurantHoursHTML();
   }
+  createFormHTML();
+
   // fill reviews
   fillReviewsHTML();
+
+
 }
 
 /**
@@ -115,6 +113,8 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
     hours.appendChild(row);
   }
 }
+
+// create reviews form
 
 /**
  * Create all reviews HTML and add them to the webpage.
@@ -162,6 +162,41 @@ createReviewHTML = (review) => {
   return li;
 }
 
+
+//creating the form for reviews
+createFormHTML = (id = self.restaurant.id) => {
+  const container = document.getElementById('reviews-container');
+  const form = document.createElement('div');
+  form.innerHTML = `<form method="POST" id="submit" name="reviewForm" style="display: flex;max-width: 100%;flex-wrap: wrap;">
+                      <input type="hidden" name="Restaurant_id" value="${id}"><br>
+                      <div style="width: 50%">
+                        <label style="color: #666" for="name">Name: </label>
+                        <input class="form-input" type="text" name="name" required> 
+                      </div>
+                      <div style="width: 50%">
+                        <label style="color: #666" for="ratings">Ratings</label>
+                        <input type="number" class="form-input" name="ratings" min="1" max="5" required> 
+                      </div>
+                      <br>
+                      <div style="width: 50%">
+                        <label style="color: #666" for="comments">comment: </label>
+                        <textarea class="form-input"  placeholder="enter comment here" name="comments" required></textarea> 
+                      </div>
+                      <div style="width: 50%">
+                        <button type="submit" >Submit</button>
+                      </div>
+                    </form>`;
+    
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    submitForm();
+  })
+  
+   // console.log(form.innerHTML);
+
+  container.appendChild(form);
+}
+
 /**
  * Add restaurant name to the breadcrumb navigation menu
  */
@@ -186,4 +221,32 @@ getParameterByName = (name, url) => {
   if (!results[2])
     return '';
   return decodeURIComponent(results[2].replace(/\+/g, ' '));
+}
+
+
+
+function submitForm(){
+
+
+    //validate form first TODO
+
+      let form = document.forms['reviewForm'];
+      let restaurant_id = form['Restaurant_id'].value;
+      let name = form['name'].value;
+      let rating = form['ratings'].value;
+      let comments = form['comments'].value;
+
+      console.log(restaurant_id,name,rating,comments)
+
+      DBHelper.postReview({
+                            "restaurant_id": restaurant_id,
+                            "name": name,
+                            "rating": rating,
+                            "comments": comments
+                            }
+                          );
+
+      //add review to page
+
+  
 }
