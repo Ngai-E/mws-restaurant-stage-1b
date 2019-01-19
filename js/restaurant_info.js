@@ -1,5 +1,6 @@
 let restaurant;
 var newMap;
+let reviews;
 
 /**
  * Initialize map as soon as the page is loaded.
@@ -15,6 +16,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
  * Initialize leaflet map
  */
 initMap = () => {
+  
   fetchRestaurantFromURL((error, restaurant) => {
     if (error) { // Got an error!
       console.error(error);
@@ -34,6 +36,7 @@ initMap = () => {
       }).addTo(newMap);
       fillBreadcrumb();
       DBHelper.mapMarkerForRestaurant(self.restaurant, self.newMap);
+      console.log()
     }
   });
 }  
@@ -59,7 +62,7 @@ fetchRestaurantFromURL = (callback) => {
         return;
       }
       fillRestaurantHTML();
-      callback(null, restaurant)
+      callback(null, restaurant);
     });
   }
 }
@@ -68,6 +71,7 @@ fetchRestaurantFromURL = (callback) => {
  * Create restaurant HTML and add it to the webpage
  */
 fillRestaurantHTML = (restaurant = self.restaurant) => {
+  
   const name = document.getElementById('restaurant-name');
   name.innerHTML = restaurant.name;
 
@@ -88,8 +92,8 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   }
   createFormHTML();
 
-  // fill reviews
-  fillReviewsHTML();
+  fetchReviews();
+  
 
 
 }
@@ -119,7 +123,10 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
 /**
  * Create all reviews HTML and add them to the webpage.
  */
-fillReviewsHTML = (reviews = self.restaurant.reviews) => {
+
+ console.log()
+  fillReviewsHTML = (reviews = self.reviews) => {
+  console.log(reviews);
   const container = document.getElementById('reviews-container');
   const title = document.createElement('h2');
   title.innerHTML = 'Reviews';
@@ -147,8 +154,10 @@ createReviewHTML = (review) => {
   name.innerHTML = review.name;
   li.appendChild(name);
 
+
   const date = document.createElement('p');
-  date.innerHTML = review.date;
+  let reviewDate = new Date(review.updatedAt);
+  date.innerHTML = reviewDate.toDateString();
   li.appendChild(date);
 
   const rating = document.createElement('p');
@@ -158,6 +167,15 @@ createReviewHTML = (review) => {
   const comments = document.createElement('p');
   comments.innerHTML = review.comments;
   li.appendChild(comments);
+
+  const deleteButton  = document.createElement('button');
+  deleteButton.setAttribute('class', 'delete');
+  deleteButton.innerHTML = 'delete';
+  deleteButton.addEventListener('click', (event) =>{
+    //remove review from database
+    deleteReview(review.id, event.target);
+  })
+ li.appendChild(deleteButton);
 
   return li;
 }
@@ -249,4 +267,38 @@ function submitForm(){
       //add review to page
 
   
+}
+
+//fetch the reviews for this form
+function fetchReviews(restaurant = self.restaurant){
+  fetch(`http://localhost:1337/reviews/?restaurant_id=${restaurant.id}`)
+  .then(response => {
+    return response.json();
+  })
+  .then(data => {
+    //console.log(data);
+    self.reviews = data;
+    // fill reviews
+    fillReviewsHTML();
+  })
+  .catch(e => {
+    console.log(`an error occured with code ${e}`)
+  })
+}
+
+//delete particular review
+function deleteReview(id, target){
+
+  fetch(`http://localhost:1337/reviews/${id}`, {method: 'DELETE'})
+  .then(response => {
+    return response.json();
+  })
+  .then(data => {
+    console.log(data);
+    //self.reviews = data;
+    target.parentNode.parentNode.removeChild(target.parentNode);
+  })
+  .catch(e => {
+    console.log(`an error occured with code ${e}`)
+  })
 }
