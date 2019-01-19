@@ -3,7 +3,7 @@ class restaurantDB {
 
 	static openDB(){
 	  	//skip creating indexedDB if service worker is not supported
-		console.log('inside indexedDB code');
+		//console.log('inside indexedDB code');
 		  if (!navigator.serviceWorker) {
 		    return Promise.resolve();
 		  }

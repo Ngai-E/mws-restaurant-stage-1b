@@ -250,17 +250,29 @@ createRestaurantHTML = (restaurant) => {
   const favorite = document.createElement('div');
   favorite.setAttribute('class', 'favorite');
   const star = document.createElement('span');   
-  star.setAttribute('class', 'fa fa-star');
   star.setAttribute('id', `star${restaurant.id}`);
-  star.innerHTML = `&nbsp  ADD AS FAVORITE`
-  favorite.append(star);
 
   //initialize the favorite
   isFavorite = restaurant.is_favorite;
 
+  if(isFavorite === 'true'){
+    console.log(isFavorite);
+    star.setAttribute('class', 'fa fa-star checked');
+    star.innerHTML = ` &nbsp UNFAVORITE`
+  }
+
+  else {
+    console.log(isFavorite)
+    star.setAttribute('class', 'fa fa-star');
+    star.innerHTML = `&nbsp  ADD AS FAVORITE`
+  }
+ 
+  favorite.append(star);
+
  // console.log(restaurant.is_favorite)
   favorite.addEventListener('click', (event) =>{
     //console.log(restaurant.id)
+    //alert(restaurant.id)
     processFavorite(restaurant.id);
     
   })
@@ -291,37 +303,44 @@ addMarkersToMap = (restaurants = self.restaurants) => {
 function processFavorite(id){
   
   //favorite the restaurant
-  if(isFavorite === false){
+  if(isFavorite === 'false'){
+   // console.log(self.restaurants[id-1].is_favorite)
+    self.restaurants[id-1].is_favorite = 'true';
+    DBHelper.updateRestaurant(self.restaurants[id-1], id-1);
     fetch(`http://localhost:1337/restaurants/${id}/?is_favorite=true`,
              { 
               method: 'PUT',
              }) 
       .then(json => {return json.json()}) 
       .then(function (data) {
-       console.log('Request succeeded with JSON response', data); 
+      // console.log('Request succeeded with JSON response', data); 
        //do something when it is succeeded like toggling the like star
-        toggleClass(`star${id}`, 'checked');
+        //toggleClass(`star${id}`, 'checked');
+        document.getElementById(`star${id}`).style.color = 'orange';
+        document.getElementById(`star${id}`).innerHTML = '&nbsp &nbsp &nbsp UNFAVORITE';
 
-        document.getElementById(`star${id}`).innerHTML = `&nbsp &nbsp &nbsp UNFAVORITE`
-
-       isFavorite = true;
+       isFavorite = 'true';
       })
       .catch(function (error) { console.log('Request failed', error); });
   }
 
   //unfavorite the restaurant
   else {
+   // console.log(self.restaurants[id-1].is_favorite)
+    self.restaurants[id-1].is_favorite = 'false';
+    DBHelper.updateRestaurant(self.restaurants[id-1], id-1);
      fetch(`http://localhost:1337/restaurants/${id}/?is_favorite=false`,
              { 
               method: 'PUT',
              }) 
       .then(json => {return json.json()}) 
       .then(function (data) {
-       console.log('Request succeeded with JSON response', data); 
+      // console.log('Request succeeded with JSON response', data); 
        //do something when it is succeeded like toggling the like star
-        toggleClass(`star${id}`, 'checked');
-        document.getElementById(`star${id}`).innerHTML = `&nbsp  ADD AS FAVORITE`
-       isFavorite = false;
+        //toggleClass(`star${id}`, 'checked');
+        document.getElementById(`star${id}`).style.color = '#333';
+        document.getElementById(`star${id}`).innerHTML = '&nbsp  ADD AS FAVORITE';
+       isFavorite = 'false';
       })
       .catch(function (error) { console.log('Request failed', error); });
   }

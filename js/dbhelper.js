@@ -259,23 +259,22 @@ class DBHelper {
 
     }
 
-    //store reviews data
-    static postReview(data){
-
-      //check if user is online
-
-      fetch("http://localhost:1337/reviews/",
-             { 
-              method: 'post',
-              headers: { "Content-type": "application/JSON; charset=UTF-8" },
-              body: JSON.stringify(data)
-             }) 
-      .then(json => {return json.json()}) 
-      .then(function (data) {
-       console.log('Request succeeded with JSON response', data); 
-      })
-      .catch(function (error) { console.log('Request failed', error); });
+    //update the restaurant especially if favorite changed
+    static updateRestaurant(data, key){
+      let dbPromise = DBHelper.openDB();
+      dbPromise.then(function(db) {
+          var tx = db.transaction('restaurant', 'readwrite');
+          var store = tx.objectStore('restaurant');
+          store.put(data);
+          return tx.complete;
+        }).then(function() {
+          console.log('item updated!');
+      });
     }
+
+    static deleteRestaurantReviews(){}
+
+
 
 }
 
