@@ -31,7 +31,7 @@ self.addEventListener('activate', function(event) {
           	return cacheName != cache_name;
           
         }).map(function(cacheName) {
-        	//console.log(`trying to delete ${cacheName}`);    //
+        	//console.log(`trying to delete ${cacheName}`);    
           return caches.delete(cacheName);
         })
       );

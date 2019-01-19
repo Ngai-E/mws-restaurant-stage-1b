@@ -4,6 +4,8 @@ let restaurants,
 var newMap
 var markers = []
 
+let isFavorite;
+
 /**
  * Fetch neighborhoods and cuisines as soon as the page is loaded.
  */
@@ -249,11 +251,18 @@ createRestaurantHTML = (restaurant) => {
   favorite.setAttribute('class', 'favorite');
   const star = document.createElement('span');   
   star.setAttribute('class', 'fa fa-star');
-  star.innerHTML = 'ADD AS FAVORITE'
+  star.setAttribute('id', `star${restaurant.id}`);
+  star.innerHTML = `&nbsp  ADD AS FAVORITE`
   favorite.append(star);
 
+  //initialize the favorite
+  isFavorite = restaurant.is_favorite;
+
+ // console.log(restaurant.is_favorite)
   favorite.addEventListener('click', (event) =>{
+    //console.log(restaurant.id)
     processFavorite(restaurant.id);
+    
   })
  // li.append('<br>')
   li.append(favorite)
@@ -279,9 +288,11 @@ addMarkersToMap = (restaurants = self.restaurants) => {
 
 
 //favorite or unfavorite a restaurant
-processFavorite(id){
+function processFavorite(id){
   
-  fetch(`http://localhost:1337/restaurants/${id}/?is_favorite=true`,
+  //favorite the restaurant
+  if(isFavorite === false){
+    fetch(`http://localhost:1337/restaurants/${id}/?is_favorite=true`,
              { 
               method: 'PUT',
              }) 
@@ -289,8 +300,50 @@ processFavorite(id){
       .then(function (data) {
        console.log('Request succeeded with JSON response', data); 
        //do something when it is succeeded like toggling the like star
+        toggleClass(`star${id}`, 'checked');
+
+        document.getElementById(`star${id}`).innerHTML = `&nbsp &nbsp &nbsp UNFAVORITE`
+
+       isFavorite = true;
       })
       .catch(function (error) { console.log('Request failed', error); });
+  }
+
+  //unfavorite the restaurant
+  else {
+     fetch(`http://localhost:1337/restaurants/${id}/?is_favorite=false`,
+             { 
+              method: 'PUT',
+             }) 
+      .then(json => {return json.json()}) 
+      .then(function (data) {
+       console.log('Request succeeded with JSON response', data); 
+       //do something when it is succeeded like toggling the like star
+        toggleClass(`star${id}`, 'checked');
+        document.getElementById(`star${id}`).innerHTML = `&nbsp  ADD AS FAVORITE`
+       isFavorite = false;
+      })
+      .catch(function (error) { console.log('Request failed', error); });
+  }
+
+  
 }
 
 
+function toggleClass(id, classNam){
+  var element = document.getElementById(id);
+
+  if (element.classList) { 
+    element.classList.toggle(classNam);
+  } else {
+    // For IE9
+    var classes = element.className.split(" ");
+    var i = classes.indexOf(classNam);
+
+    if (i >= 0) 
+      classes.splice(i, 1);
+    else 
+      classes.push(classNam);
+      element.className = classes.join(" "); 
+  }
+}
