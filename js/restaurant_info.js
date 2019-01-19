@@ -256,7 +256,7 @@ function submitForm(){
 
       console.log(restaurant_id,name,rating,comments)
 
-      DBHelper.postReview({
+      postReview({
                             "restaurant_id": restaurant_id,
                             "name": name,
                             "rating": rating,
@@ -302,3 +302,24 @@ function deleteReview(id, target){
     console.log(`an error occured with code ${e}`)
   })
 }
+
+//store reviews data
+    function postReview(data){
+
+      //check if user is online
+
+      fetch("http://localhost:1337/reviews/",
+             { 
+              method: 'post',
+              headers: { "Content-type": "application/JSON; charset=UTF-8" },
+              body: JSON.stringify(data)
+             }) 
+      .then(json => {return json.json()}) 
+      .then(function (data) {
+       console.log('Request succeeded with JSON response', data); 
+       let arrayData = [];
+       arrayData.push(data)
+       fillReviewsHTML(arrayData);
+      })
+      .catch(function (error) { console.log('Request failed', error); });
+    }
