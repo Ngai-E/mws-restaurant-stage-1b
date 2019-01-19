@@ -185,23 +185,23 @@ createReviewHTML = (review) => {
 createFormHTML = (id = self.restaurant.id) => {
   const container = document.getElementById('reviews-container');
   const form = document.createElement('div');
-  form.innerHTML = `<form method="POST" id="submit" name="reviewForm" style="display: flex;max-width: 100%;flex-wrap: wrap;">
+  form.innerHTML = `<form method="POST" id="submit" name="reviewForm" style="max-width: 100%;">
                       <input type="hidden" name="Restaurant_id" value="${id}"><br>
-                      <div style="width: 50%">
+                      <div style="width: 25%" class = "forminput">
                         <label style="color: #666" for="name">Name: </label>
                         <input class="form-input" type="text" name="name" required> 
                       </div>
-                      <div style="width: 50%">
+                      <div class="forminput" style="width: 25%">
                         <label style="color: #666" for="ratings">Ratings</label>
                         <input type="number" class="form-input" name="ratings" min="1" max="5" required> 
                       </div>
                       <br>
-                      <div style="width: 50%">
+                      <div style="width: 25%" class = "forminput">
                         <label style="color: #666" for="comments">comment: </label>
                         <textarea class="form-input"  placeholder="enter comment here" name="comments" required></textarea> 
                       </div>
-                      <div style="width: 50%">
-                        <button type="submit" >Submit</button>
+                      <div style="width: 25%" class = "forminput">
+                        <button type="submit" class="buttonReview" >Add Review</button>
                       </div>
                     </form>`;
     

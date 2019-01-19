@@ -22,7 +22,7 @@
  	);
  });
 
-/* delete old caches when new service worker is activating*/
+/* delete old caches when new service worker is activating*/  //
 self.addEventListener('activate', function(event) {
   event.waitUntil(
     caches.keys().then(function(allcaches) {

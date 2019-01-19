@@ -6,6 +6,19 @@
   color: orange;
 }
 
+
+.buttonReview {
+      background-color: orange;
+    margin-top: 5%;
+    /* background-color: white; */
+    box-shadow: 0 0 17px 13px rgba(0,0,0,0.4);
+    text-shadow: 0 0 0px black;
+    border-radius: 30px;
+    width: 50%;
+    height: 50px;
+}
+
+
 .favorite {
     display: block;
     background: #d6d6e6;
@@ -25,6 +38,10 @@
     margin: 10px;
     padding: 0 10px;
     width: 200px;
+}
+
+.forminput {
+  display: inline-block;
 }
 body,td,th,p{
 	font-family: Arial, Helvetica, sans-serif;
