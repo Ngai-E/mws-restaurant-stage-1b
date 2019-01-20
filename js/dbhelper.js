@@ -365,7 +365,17 @@ class DBHelper {
       });
     }
 
-    static deleteRestaurantReviews(){}
+    static deleteOfflineReviews(key){
+     let dbPromise = DBHelper.openDBReviews();
+      dbPromise.then(function(db) {
+        var tx = db.transaction('reviewsOffline', 'readwrite');
+        var store = tx.objectStore('reviewsOffline');
+        store.delete(key);
+        return tx.complete;
+      }).then(function() {
+        console.log('Item deleted');
+      });
+    }
 
 
  // offline storing of reviews
@@ -406,7 +416,6 @@ class DBHelper {
       .objectStore('reviewsOffline').index('By-restaurantID');
 
       return index.getAll().then(reviews => {
-
         //read the reviews from the database if already stored
         if(reviews.length > 0){
          //console.log('reading from database');

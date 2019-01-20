@@ -25,6 +25,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
               .then(json => {return json.json()}) 
               .then(function (data) {
                console.log('update successful', data); 
+               DBHelper.deleteOfflineReviews(data.updatedAt);
                
               })
               .catch(function (error) { console.log('Request failed', error); });
@@ -317,7 +318,7 @@ function fetchReview(restaurant = self.restaurant){
 
 //delete particular review
 function deleteReview(id, target){
-
+  
   fetch(`http://localhost:1337/reviews/${id}`, {method: 'DELETE'})
   .then(response => {
     return response.json();
