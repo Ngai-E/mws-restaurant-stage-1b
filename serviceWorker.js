@@ -54,7 +54,7 @@ self.addEventListener('activate', function(event) {
         var fetchPromise = fetch(event.request).then(function(networkResponse) {
 
           //cache non json responses
-          if(!(event.request.url.endsWith('restaurants')))
+          if(!(event.request.url.startsWith('http://localhost:1337/')))
             cache.put(event.request, networkResponse.clone());
           return networkResponse;
         })

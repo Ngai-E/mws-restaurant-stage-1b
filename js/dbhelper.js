@@ -437,4 +437,17 @@ class DBHelper {
 
   }
 
+//delete items reviews
+  static deleteReviews(key){
+     let dbPromise = DBHelper.openDBReviews();
+      dbPromise.then(function(db) {
+        var tx = db.transaction('reviews', 'readwrite');
+        var store = tx.objectStore('reviews');
+        store.delete(key);
+        return tx.complete;
+      }).then(function() {
+        console.log('Item deleted');
+      });
+    }
+
 }
