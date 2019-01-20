@@ -201,7 +201,7 @@ createReviewHTML = (review) => {
     //remove review from database
     deleteReview(review.id, event.target);
   })
- li.appendChild(deleteButton);
+// li.appendChild(deleteButton);
 
   return li;
 }
