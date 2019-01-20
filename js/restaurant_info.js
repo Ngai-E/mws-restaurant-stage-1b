@@ -81,7 +81,7 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   const image = document.getElementById('restaurant-img');
   image.className = 'restaurant-img'
   image.src = DBHelper.imageUrlForRestaurant(restaurant);
-  image.alt = "restaurant photo";
+  image.alt = `${restaurant.name} Restaurant`;
 
   const cuisine = document.getElementById('restaurant-cuisine');
   cuisine.innerHTML = restaurant.cuisine_type;
@@ -92,7 +92,7 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   }
   createFormHTML();
 
-  fetchReviews();
+  fetchReview();
   
 
 
@@ -124,12 +124,11 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
  * Create all reviews HTML and add them to the webpage.
  */
 
- console.log()
   fillReviewsHTML = (reviews = self.reviews) => {
-  console.log(reviews);
+  //console.log(reviews);
   const container = document.getElementById('reviews-container');
   const title = document.createElement('h2');
-  title.innerHTML = 'Reviews';
+  title.innerHTML = 'All Reviews';
   container.appendChild(title);
 
   if (!reviews) {
@@ -184,6 +183,10 @@ createReviewHTML = (review) => {
 //creating the form for reviews
 createFormHTML = (id = self.restaurant.id) => {
   const container = document.getElementById('reviews-container');
+  const title = document.createElement('h3');
+  title.innerHTML = 'Add Reviews';
+  container.appendChild(title);
+
   const form = document.createElement('div');
   form.innerHTML = `<form method="POST" id="submit" name="reviewForm" style="max-width: 100%;">
                       <input type="hidden" name="Restaurant_id" value="${id}"><br>
@@ -254,36 +257,36 @@ function submitForm(){
       let rating = form['ratings'].value;
       let comments = form['comments'].value;
 
-      console.log(restaurant_id,name,rating,comments)
+      //console.log(restaurant_id,name,rating,comments)
 
       postReview({
-                            "restaurant_id": restaurant_id,
+                            "restaurant_id": Number(restaurant_id),
                             "name": name,
-                            "rating": rating,
-                            "comments": comments
+                            "rating": Number(rating),
+                            "comments": comments,
+                            "updatedAt": (new Date()).getTime()
                             }
                           );
 
       //add review to page
 
+      form.reset();
   
 }
 
 //fetch the reviews for this form
-function fetchReviews(restaurant = self.restaurant){
-  fetch(`http://localhost:1337/reviews/?restaurant_id=${restaurant.id}`)
-  .then(response => {
-    return response.json();
-  })
-  .then(data => {
-    //console.log(data);
-    self.reviews = data;
-    // fill reviews
-    fillReviewsHTML();
-  })
-  .catch(e => {
-    console.log(`an error occured with code ${e}`)
-  })
+function fetchReview(restaurant = self.restaurant){
+  //fetch reviews by restaurant id
+  DBHelper.fetchReviews(restaurant.id, (error, reviews) =>{
+    if (error) { // Got an error!
+      console.error(error);
+    }
+    else{
+      self.reviews = reviews;
+     // fill reviews
+     fillReviewsHTML();
+    }
+  });
 }
 
 //delete particular review
@@ -307,19 +310,35 @@ function deleteReview(id, target){
     function postReview(data){
 
       //check if user is online
+      if(navigator.onLine ===true){
+        //alert('hello')
+        fetch("http://localhost:1337/reviews/",
+                     { 
+                      method: 'post',
+                      headers: { "Content-type": "application/JSON; charset=UTF-8" },
+                      body: JSON.stringify(data)
+                     }) 
+              .then(json => {return json.json()}) 
+              .then(function (data) {
+               console.log('Request succeeded with JSON response', data); 
+               let arrayData = [];
+               arrayData.push(data)
+               fillReviewsHTML(arrayData);
+               DBHelper.storeReviews(arrayData);
+              })
+              .catch(function (error) { console.log('Request failed', error); });
+      }
 
-      fetch("http://localhost:1337/reviews/",
-             { 
-              method: 'post',
-              headers: { "Content-type": "application/JSON; charset=UTF-8" },
-              body: JSON.stringify(data)
-             }) 
-      .then(json => {return json.json()}) 
-      .then(function (data) {
-       console.log('Request succeeded with JSON response', data); 
-       let arrayData = [];
-       arrayData.push(data)
-       fillReviewsHTML(arrayData);
-      })
-      .catch(function (error) { console.log('Request failed', error); });
-    }
+      //the user is offline so we will store in an ofline database
+      else{
+        //alert('helo');
+        let arrayData = [];
+        arrayData.push(data);
+        DBHelper.storeReviewsoffline(arrayData);
+        DBHelper.storeReviews(arrayData);
+      }
+
+      
+  }
+
+//  document.addEventListener('')

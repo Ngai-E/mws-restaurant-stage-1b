@@ -75,8 +75,6 @@ class DBHelper {
       });
     });
 
-   
-
   }
 
   /**
@@ -259,6 +257,101 @@ class DBHelper {
 
     }
 
+     static openDBReviews(){
+      //skip creating indexedDB if service worker is not supported
+    //console.log('inside indexedDB code');
+      if (!navigator.serviceWorker) {
+        return Promise.resolve();
+      }
+
+    let dbPromise = idb.open('reviews-db', 2, function(upgradeDb) {
+        switch(upgradeDb.oldVersion){
+          case 0:
+            let store = upgradeDb.createObjectStore('reviews', {
+              keyPath: 'id'
+            });
+            store.createIndex('By-restaurantID', 'restaurant_id');
+        case 1: 
+          store.createIndex('By-date', 'updatedAt');
+        case 2: 
+          store = upgradeDb.createObjectStore('reviewsOffline', {
+              keyPath: 'updatedAt'
+            });
+
+          store.createIndex('By-restaurantID', 'restaurant_id');
+        }
+        
+      });
+        return dbPromise;
+    }
+
+     // storing reviews data
+    static storeReviews(data) {
+      // body...
+    
+      let dbPromise = DBHelper.openDBReviews();
+      dbPromise.then(function(db)
+        {
+          let tx = db.transaction('reviews', 'readwrite');
+          let store = tx.objectStore('reviews');
+          data.forEach(function(review){
+            store.put(review);
+          }); 
+
+        //only keep first 30 reviews offline
+        store.index('By-date').openCursor(null, 'prev').then(function(cursor){
+          return cursor.advance(30);
+        }).then(function deleteRest(cursor){
+          if(!cursor) return;
+          cursor.delete();
+          return cursor.continue().then(deleteRest);
+        })
+      });
+      
+
+    }
+
+    static fetchReviews(id,callback) {
+
+    let dbPromise = DBHelper.openDBReviews(); //open the reviews indexedDB
+
+    return dbPromise.then(function(db){
+
+      var index = db.transaction('reviews')
+      .objectStore('reviews').index('By-restaurantID');
+
+      return index.getAll(id).then(reviews => {
+
+        //read the reviews from the database if already stored
+        if(reviews.length > 0){
+         //console.log('reading from database');
+          callback(null, reviews);
+        }
+
+        else{
+            //fetch the json data and store if the page is loading for the first time
+           return fetch(`http://localhost:1337/reviews/?restaurant_id=${id}`)
+          .then(response => {
+            return response.json();
+          })
+          .then(reviews => {
+            callback(null, reviews);
+            DBHelper.storeReviews(reviews);  //store the restaurant details.
+          })
+          .catch(e => {
+            callback(`Request failed. Returned status of ${e}`, null);
+          })
+        }
+        
+      }).catch(e => {
+        callback(`Request failed. Returned status of ${e}`, null);
+      });
+    });
+
+   
+
+  }
+
     //update the restaurant especially if favorite changed
     static updateRestaurant(data, key){
       let dbPromise = DBHelper.openDB();
@@ -275,6 +368,63 @@ class DBHelper {
     static deleteRestaurantReviews(){}
 
 
+ // offline storing of reviews
+    static storeReviewsoffline(data) {
+      // body...
+    
+      let dbPromise = DBHelper.openDBReviews();
+      dbPromise.then(function(db)
+        {
+          let tx = db.transaction('reviewsOffline', 'readwrite');
+          let store = tx.objectStore('reviewsOffline');
+          data.forEach(function(review){
+            store.put(review);
+          }); 
+
+        //only keep first 30 reviews offline
+        store.index('By-date').openCursor(null, 'prev').then(function(cursor){
+          return cursor.advance(30);
+        }).then(function deleteRest(cursor){
+          if(!cursor) return;
+          cursor.delete();
+          return cursor.continue().then(deleteRest);
+        })
+      });
+      
+
+    }
+
+    //offline database
+    static fetchReviewsOffline(callback) {
+
+    let dbPromise = DBHelper.openDBReviews(); //open the reviews indexedDB
+
+    return dbPromise.then(function(db){
+
+      var index = db.transaction('reviewsOffline')
+      .objectStore('reviewsOffline').index('By-restaurantID');
+
+      return index.getAll().then(reviews => {
+
+        //read the reviews from the database if already stored
+        if(reviews.length > 0){
+         //console.log('reading from database');
+          callback(null, reviews);
+        }
+
+
+        else{
+            console.log('everything up to date');   //no review was done offline
+            callback(null, []);
+        }
+        
+      }).catch(e => {
+        callback(`Request failed. Returned status of ${e}`, null);
+      });
+    });
+
+   
+
+  }
 
 }
-
