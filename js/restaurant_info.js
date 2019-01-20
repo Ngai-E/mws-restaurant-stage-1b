@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
   initMap();
   DBHelper.serviceWorkerRegistration();
   window.addEventListener('online', (event)=>{ 
-  alert('online')
+  //alert('online')
   DBHelper.fetchReviewsOffline((error, reviews) =>{
     if(error)
       {console.log(`could not fetch reviews from database ${error}`)}
@@ -318,7 +318,7 @@ function fetchReview(restaurant = self.restaurant){
 
 //delete particular review
 function deleteReview(id, target){
-  
+
   fetch(`http://localhost:1337/reviews/${id}`, {method: 'DELETE'})
   .then(response => {
     return response.json();
