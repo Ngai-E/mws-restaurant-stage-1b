@@ -8,6 +8,32 @@ let reviews;
 document.addEventListener('DOMContentLoaded', (event) => {  
   initMap();
   DBHelper.serviceWorkerRegistration();
+  window.addEventListener('online', (event)=>{ 
+  alert('online')
+  DBHelper.fetchReviewsOffline((error, reviews) =>{
+    if(error)
+      {console.log(`could not fetch reviews from database ${error}`)}
+    else{
+      if(reviews.length > 0){  //offline form data present
+        reviews.forEach(function(review){
+          fetch("http://localhost:1337/reviews/",
+                     { 
+                      method: 'post',
+                      headers: { "Content-type": "application/JSON; charset=UTF-8" },
+                      body: JSON.stringify(review)
+                     }) 
+              .then(json => {return json.json()}) 
+              .then(function (data) {
+               console.log('update successful', data); 
+               
+              })
+              .catch(function (error) { console.log('Request failed', error); });
+        }); 
+      }
+    }
+  });
+  });
+  
 });
 
 
@@ -345,4 +371,3 @@ function deleteReview(id, target){
       
   }
 
-//  document.addEventListener('')
