@@ -264,21 +264,21 @@ class DBHelper {
         return Promise.resolve();
       }
 
-    let dbPromise = idb.open('reviews-db', 2, function(upgradeDb) {
+    let dbPromise = idb.open('reviewsDB', 1, function(upgradeDb) {
         switch(upgradeDb.oldVersion){
           case 0:
-            let store = upgradeDb.createObjectStore('reviews', {
-              keyPath: 'id'
+            let store = upgradeDb.createObjectStore('reviewsOffline', {
+              keyPath: 'updatedAt'
             });
             store.createIndex('By-restaurantID', 'restaurant_id');
-        case 1: 
-          store.createIndex('By-date', 'updatedAt');
-        case 2: 
-          store = upgradeDb.createObjectStore('reviewsOffline', {
+           
+            store.createIndex('By-date', 'updatedAt');
+            store = upgradeDb.createObjectStore('reviews', {
               keyPath: 'updatedAt'
             });
 
           store.createIndex('By-restaurantID', 'restaurant_id');
+          case 1: ;
         }
         
       });
@@ -298,14 +298,14 @@ class DBHelper {
             store.put(review);
           }); 
 
-        //only keep first 30 reviews offline
-        store.index('By-date').openCursor(null, 'prev').then(function(cursor){
-          return cursor.advance(30);
-        }).then(function deleteRest(cursor){
-          if(!cursor) return;
-          cursor.delete();
-          return cursor.continue().then(deleteRest);
-        })
+        // //only keep first 30 reviews offline
+        // store.index('By-date').openCursor(null, 'prev').then(function(cursor){
+        //   return cursor.advance(30);
+        // }).then(function deleteRest(cursor){
+        //   if(!cursor) return;
+        //   cursor.delete();
+        //   return cursor.continue().then(deleteRest);
+        // })
       });
       
 
@@ -381,14 +381,15 @@ class DBHelper {
             store.put(review);
           }); 
 
-        //only keep first 30 reviews offline
-        store.index('By-date').openCursor(null, 'prev').then(function(cursor){
-          return cursor.advance(30);
-        }).then(function deleteRest(cursor){
-          if(!cursor) return;
-          cursor.delete();
-          return cursor.continue().then(deleteRest);
-        })
+        // //only keep first 30 reviews offline
+        // store.index('By-date').openCursor(null, 'prev').then(function(cursor){
+        //   return cursor.advance(30);
+        // }).then(function deleteRest(cursor){
+        //   if(!cursor) return;
+        //   cursor.delete();
+        //   return cursor.continue().then(deleteRest);
+        // })
+        return 1;
       });
       
 

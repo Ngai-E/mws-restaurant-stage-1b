@@ -334,8 +334,12 @@ function deleteReview(id, target){
         //alert('helo');
         let arrayData = [];
         arrayData.push(data);
-        DBHelper.storeReviewsoffline(arrayData);
+        console.log(data);
+        let check = DBHelper.storeReviewsoffline(arrayData);
         DBHelper.storeReviews(arrayData);
+
+        if(check === 1)
+          fillReviewsHTML(arrayData);
       }
 
       
